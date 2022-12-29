@@ -1,0 +1,93 @@
+import React, { useState } from 'react';
+import './App.css';
+import { QuestionCard } from './components/QuestionCard';
+
+function App() {
+
+  const [loading, setLoading] = useState(false);
+  const [questionNumber, setQuestionNumber] = useState(10);
+  const [question, setQuestion] = useState<any[]>([]);
+  const [answers, setAnswers] = useState([]);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [gameOver, setGameOver] = useState("");
+
+  const [quizStartLoading, setQuizStartLoading] = useState(true);
+
+ console.log(question);
+
+  const startQuiz = async() => {
+    setLoading(true);
+    setQuizStartLoading(false);
+
+    let data = await fetch("https://opentdb.com/api.php?amount=10&category=18&type=multiple");
+    console.log(data);
+    let data_data = await data.json();
+    console.log(data_data.results);
+    let result_data = data_data.results;
+    console.log(result_data);
+    const question_arr: any = [];
+    const answer_arr: any = [];
+    //console.log(data_data.results.question);
+    result_data.map((single_data:any)=>{
+      //console.log(single_data.question);
+      question_arr.push(single_data.question);
+     
+
+     // console.log(single_data.incorrect_answers);
+     const answer_data = single_data.incorrect_answers;
+     answer_data.push(single_data.correct_answer);
+      answer_arr.push(answer_data);
+    })
+    console.log(answer_arr);
+    setAnswers(answer_arr);
+    setQuestion(question_arr);
+    setLoading(false);
+  }
+  const checkAnswer = (e : React.MouseEvent<HTMLButtonElement>) =>{
+
+  }
+  const nextQuestion = () =>{
+
+  }
+  return (
+    <div className="App">
+      <h2>Typescript Quiz App</h2>
+      <button onClick={startQuiz}>Start Quiz</button>
+      {
+        quizStartLoading?<div><br/>Quiz Loading !!!"</div>:
+        <div>
+            <p>Score: 100 </p>
+            {
+              loading?"Questions Loading !!!":
+              <>
+              {
+                question.map((single_question,index)=>{
+                  return(
+                      <QuestionCard questionNumber={index+1} totalQuestions={10}
+                      question={single_question}
+                      answers={answers[index]} 
+                      userAnswer=".svg"
+                      key = {index}
+                      />
+                  )
+
+                })
+              }
+              
+              </>
+            }
+            
+            <div>
+              <br/>
+              <button>Next Question</button>
+            </div>
+        </div>
+      }
+     
+      
+      
+    </div>
+  );
+}
+
+export default App;
